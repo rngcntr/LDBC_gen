@@ -3,29 +3,81 @@
 Suppose you want to generate synthetic graph data compaible and loadable into a [Tinkerpop 3 data format](http://tinkerpop.apache.org/docs/current/reference/#_gremlin_i_o).
 *We are here to the rescue!*
 
-This repo contains files and configurations that build a docker image with the desirde data inside, and then how to transpose it to the Tinkerpop-compatible format, and how to load it into Tinkergraph.
+This repo contains files and configurations to:
 
-Below a preamble, the *“just run it!”* steps are in the section **RUN!**, but you should still read below to know what will happen. 
+* build a docker image with the desired data inside,
+* transpose the LDBC-generated data to a Tinkerpop-compatible format, and
+* load it into Tinkergraph.
 
-## [LDBC-SNB Data Generator](https://github.com/ldbc/ldbc_snb_datagen)
+Below a preamble, the *“just run it!”* steps are in the section **[RUN!](#run)**, but you should still read below to know what will happen. 
 
-The LDBC-SNB Data Generator (DATAGEN) is the responsible of providing the data sets used by all the LDBC benchmarks.
-This data generator is designed to produce directed labeled graphs that mimic the characteristics of those graphs of real data.
-A detailed description of the schema produced by datagen, as well as the format of the output files, can be found in the latest version of official [LDBC SNB specification document](https://github.com/ldbc/ldbc_snb_docs)
+## Preamble
+
+Below the basics of the process, in case you want to it yourself, but rest assured: *this docker image will make all the following automatically*.
+
+### [LDBC-SNB Data Generator](https://github.com/ldbc/ldbc_snb_datagen)
+
+>   The LDBC-SNB Data Generator (DATAGEN) is the responsible of providing the data sets used by all the LDBC benchmarks.
+>   This data generator is designed to produce directed labeled graphs that mimic the characteristics of those graphs of real data.
+>   A detailed description of the schema produced by datagen, as well as the format of the output files, can be found in the latest version of official [LDBC SNB specification document](https://github.com/ldbc/ldbc_snb_docs)
 
 **Actually** what you care about is described as a [list of csv files](https://github.com/ldbc/ldbc_snb_datagen/wiki/Generated-CSV-Files).
+Those `CSV` files will be generated ( *based on the configuration you provide, read below*) during the building of the image.
 
-## The generation process
 
-To obtain such data one should: install hadoop, configure it, download gremlin, download `ldbc_gen` code, configure it, and then run it.
+### The generation process
+
+To obtain such data one should: 
+
+1. install hadoop, and configure it;
+2. download gremlin;
+3. download `ldbc_gen` code, and configure it;
+4. run the  `ldbc_gen` code to produce the `CSV` files;
+5. parse it and convert it to a format compatible with tinkerpop 3.
+
 Detailed steps are in the `Dockerfile`, sample configuration is in th `extra` directory.
+Hence, the docker file, when building, will carry out steps 1 to 4, then when you run the docker image with th default command, it will perform the last step.
 
-After gnerating the `.csv` files with hadoop (they may be huge, they may require a lot of RAM to be done) the next step is to parse each one of them, and import their content into nodes and/or edges.
-This second part is carried out by a gremlin/groovy script based upon the work of [Jonathan Ellithorpe (ellitron) at PlatformLab](https://github.com/PlatformLab/ldbc-snb-impls/blob/master/snb-interactive-titan/src/main/java/net/ellitron/ldbcsnbimpls/interactive/titan/TitanGraphLoader.java).
+### Structure of the repo
 
-## Configure
+~~~bash
 
-Standard configuration is for a ver small dataset, with 100 users and 1 year of activiy (see `images/extra/ldbc.params.ini`)
+    .
+    ├── README.md                            # This document
+    ├── images                               # Where the image code is
+    │   ├── gremlin-ldbc_gen.dockerfile      # The hero of the story
+    │   │      
+    │   └── extra                            # Files needed in the setup
+    │       ├── activate-sugar-tp3.groovy    # Sugar plug-in in the Tp3 Console
+    │       ├── ldbc.large.params.ini        # Use this to get a large dataset
+    │       ├── ldbc.params.ini              # Those are default, very small
+    │       ├── mapred-site.xml              # The MEMORY conf. for Hadoop
+    │       └── safe.sh                      # This as above: MEMORY 4 Hadoop
+    │
+    └── runtime                              # This folder will be loaded INSIDE
+        │                                    # the docker image, if you need 
+        │                                    # any file, put it here
+        │
+        ├── data                             # Output data will appear here
+        └── ldbc.groovy                      # The parsing of th CSV and the 
+                                             # conversion is performed by this 
+
+~~~
+
+
+## RUN!
+
+The *zero step* is having docker up and running with all the required permissions for the current user.
+The default configuration will try to use `4096MB` of main memory, and will generate a very tiny dataset for 100 users with 1 year of activity.
+If you need more control, read 
+or below.
+
+
+### Configure
+
+
+
+Standard configuration is for a very small dataset, with 100 users and 1 year of activiy (see `images/extra/ldbc.params.ini`)
 
 ~~~~bash
 #...
@@ -37,13 +89,9 @@ ldbc.snb.datagen.generator.numYears:1
 ~~~~
 
 
-
-
-
-## RUN!
-
-The *zero step* is having docker up and running with all the required permissions for the current user.
 Then build the image in `images` with:
+
+
 
 ~~~bash
 cd images
@@ -51,7 +99,10 @@ docker build -t gremlin/ldbc_gen -f gremlin-ldbc_gen.dockerfile .
 ~~~
 
 This will do all the steps above, among which running hadoop and generating the data.
-Then the image can be used a first time to generate the Tinkerpop-compatible datasets with the following
+After gnerating the `.csv` files with hadoop (they may be huge, they may require a lot of RAM to be done) the next step is to parse each one of them, and import their content into nodes and/or edges.
+Then the image can be used a first time to generate the Tinkerpop-compatible datasets with the following.
+This second part is carried out by a gremlin/groovy script based upon the work of [Jonathan Ellithorpe (ellitron) at PlatformLab](https://github.com/PlatformLab/ldbc-snb-impls/blob/master/snb-interactive-titan/src/main/java/net/ellitron/ldbcsnbimpls/interactive/titan/TitanGraphLoader.java).
+
 
 ~~~bash
 docker run  -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx32G' gremlin/ldbc_gen

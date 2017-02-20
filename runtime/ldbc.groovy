@@ -26,7 +26,7 @@ public class LDBCGraphLoader {
     Map<Object, Object> propertiesMap;
     SimpleDateFormat birthdayDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     birthdayDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    SimpleDateFormat creationDateDateFormat = 
+    SimpleDateFormat creationDateDateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     creationDateDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     def fileNameParts = filePath.getFileName().toString().split("_");
@@ -43,10 +43,10 @@ public class LDBCGraphLoader {
     long nextProgReportTime = startTime + progReportPeriod*1000;
     long lastLineCount = 0;
 
-    for (int startIndex = 1; startIndex < lines.size(); 
+    for (int startIndex = 1; startIndex < lines.size();
         startIndex += batchSize) {
       int endIndex = Math.min(startIndex + batchSize, lines.size());
-      
+
         for (int i = startIndex; i < endIndex; i++) {
           String line = lines.get(i);
 
@@ -70,7 +70,7 @@ public class LDBCGraphLoader {
           propertiesMap.put(T.label, entityName);
 
           List<Object> keyValues = new ArrayList<>();
-          propertiesMap.forEach{ key, val -> 
+          propertiesMap.forEach{ key, val ->
             keyValues.add(key);
             keyValues.add(val);
           };
@@ -84,20 +84,20 @@ public class LDBCGraphLoader {
         try {
           graph.tx().commit();
         } catch (UnsupportedOperationException e) {
-         System.err.println("Does not support g.tx().commit(). Ignoring.");         
+         System.err.println("Does not support g.tx().commit(). Ignoring.");
          SKIP_COMMIT = true
         } catch (Exception e) {
           System.err.println( "ERROR: Transaction failed times, aborting... at " + startIndex + " " + (endIndex-1) + " for  " + e.getClass() + " "  + e.getMessage());
         }
         }
-        
 
-      if (printLoadingDots && 
+
+      if (printLoadingDots &&
           (System.currentTimeMillis() > nextProgReportTime)) {
         long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount - lastLineCount;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
@@ -106,7 +106,7 @@ public class LDBCGraphLoader {
       long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount ;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
@@ -130,19 +130,19 @@ public class LDBCGraphLoader {
     long nextProgReportTime = startTime + progReportPeriod*1000;
     long lastLineCount = 0;
 
-    for (int startIndex = 1; startIndex < lines.size(); 
+    for (int startIndex = 1; startIndex < lines.size();
         startIndex += batchSize) {
       int endIndex = Math.min(startIndex + batchSize, lines.size());
       txSucceeded = false;
       txFailCount = 0;
-      
+
         for (int i = startIndex; i < endIndex; i++) {
           String line = lines.get(i);
 
           String[] colVals = line.split("\\|");
 
           GraphTraversalSource g = graph.traversal();
-          Vertex vertex = 
+          Vertex vertex =
             g.V().has("iid", entityName + ":" + colVals[0]).next();
 
           for (int j = 1; j < colVals.length; ++j) {
@@ -157,20 +157,20 @@ public class LDBCGraphLoader {
         try {
           graph.tx().commit();
         } catch (UnsupportedOperationException e) {
-         System.err.println("Does not support g.tx().commit(). Ignoring.");         
+         System.err.println("Does not support g.tx().commit(). Ignoring.");
          SKIP_COMMIT = true
         } catch (Exception e) {
           System.err.println( "ERROR: Transaction failed times, aborting... at " + startIndex + " " + (endIndex-1) + " for  " + e.getClass() + " "  + e.getMessage());
         }
         }
-        
 
-      if (printLoadingDots && 
+
+      if (printLoadingDots &&
           (System.currentTimeMillis() > nextProgReportTime)) {
         long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount - lastLineCount;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
@@ -180,23 +180,23 @@ public class LDBCGraphLoader {
     long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount ;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
   }
 
   public static void loadEdges(Graph graph, Path filePath, boolean undirected,
-      boolean printLoadingDots, int batchSize, long progReportPeriod) 
+      boolean printLoadingDots, int batchSize, long progReportPeriod)
       throws IOException,  java.text.ParseException {
     long count = 0;
     String[] colNames = null;
     boolean firstLine = true;
     Map<Object, Object> propertiesMap;
-    SimpleDateFormat creationDateDateFormat = 
+    SimpleDateFormat creationDateDateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     creationDateDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    SimpleDateFormat joinDateDateFormat = 
+    SimpleDateFormat joinDateDateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     joinDateDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     def fileNameParts = filePath.getFileName().toString().split("_");
@@ -215,12 +215,12 @@ public class LDBCGraphLoader {
     long nextProgReportTime = startTime + progReportPeriod*1000;
     long lastLineCount = 0;
 
-    for (int startIndex = 1; startIndex < lines.size(); 
+    for (int startIndex = 1; startIndex < lines.size();
         startIndex += batchSize) {
       int endIndex = Math.min(startIndex + batchSize, lines.size());
       txSucceeded = false;
       txFailCount = 0;
-      
+
         for (int i = startIndex; i < endIndex; i++) {
           String line = lines.get(i);
 
@@ -230,9 +230,9 @@ public class LDBCGraphLoader {
           def Vertex vertex1;
           def Vertex vertex2;
           try {
-          vertex1 = 
+          vertex1 =
             g.V().has("iid", v1EntityName + ":" + colVals[0]).next();
-          vertex2 = 
+          vertex2 =
             g.V().has("iid", v2EntityName + ":" + colVals[1]).next();
           } catch(FastNoSuchElementException e ){
             System.err.println("Missing One of "  + v1EntityName + ":" + colVals[0] + "    -    "  +  v2EntityName + ":" + colVals[1]);
@@ -251,7 +251,7 @@ public class LDBCGraphLoader {
           }
 
           List<Object> keyValues = new ArrayList<>();
-          propertiesMap.forEach{ key, val -> 
+          propertiesMap.forEach{ key, val ->
             keyValues.add(key);
             keyValues.add(val);
           };
@@ -269,20 +269,20 @@ public class LDBCGraphLoader {
         try {
           graph.tx().commit();
         } catch (UnsupportedOperationException e) {
-         System.err.println("Does not support g.tx().commit(). Ignoring.");         
+         System.err.println("Does not support g.tx().commit(). Ignoring.");
          SKIP_COMMIT = true
         } catch (Exception e) {
           System.err.println( "ERROR: Transaction failed times, aborting... at " + startIndex + " " + (endIndex-1) + " for  " + e.getClass() + " "  + e.getMessage());
         }
         }
-        
 
-      if (printLoadingDots && 
+
+      if (printLoadingDots &&
           (System.currentTimeMillis() > nextProgReportTime)) {
         long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount - lastLineCount;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
@@ -291,7 +291,7 @@ public class LDBCGraphLoader {
     long timeElapsed = System.currentTimeMillis() - startTime;
         long linesLoaded = lineCount ;
         System.out.println(String.format(
-              "Time Elapsed: %s, Lines Loaded: %d", 
+              "Time Elapsed: %s, Lines Loaded: %d",
               (timeElapsed/1000)/60, linesLoaded));
         nextProgReportTime += progReportPeriod*1000;
         lastLineCount = lineCount;
@@ -308,7 +308,7 @@ progReportPeriod = 50
 
   vertexLabels = [  "person",      "comment",      "forum",      "organisation",      "place",      "post",      "tag",      "tagclass" ];
 
-    edgeLabels = [  
+    edgeLabels = [
       "containerOf",
       "hasCreator",
       "hasInterest",
@@ -354,10 +354,10 @@ progReportPeriod = 50
       "language" // person, post
     ];
 
-    
+
 
     // TODO: Make file list generation programmatic. This method of loading,
-    // however, will be far too slow for anything other than the very 
+    // however, will be far too slow for anything other than the very
     // smallest of SNB graphs, and is therefore quite transient. This will
     // do for now.
     nodeFiles = [
@@ -368,15 +368,15 @@ progReportPeriod = 50
       "place_0_0.csv",
       "post_0_0.csv",
       "tag_0_0.csv",
-      "tagclass_0_0.csv" 
+      "tagclass_0_0.csv"
     ];
 
-    propertiesFiles = [  
+    propertiesFiles = [
       "person_email_emailaddress_0_0.csv",
       "person_speaks_language_0_0.csv"
     ];
 
-    edgeFiles = [  
+    edgeFiles = [
       "comment_hasCreator_person_0_0.csv",
       "comment_hasTag_tag_0_0.csv",
       "comment_isLocatedIn_place_0_0.csv",
@@ -406,7 +406,7 @@ progReportPeriod = 50
       for (String fileName : nodeFiles) {
         System.out.print("Loading node file " + fileName + " ");
         try {
-          LDBCGraphLoader.loadVertices(graph, Paths.get(inputBaseDir + "/" + fileName), 
+          LDBCGraphLoader.loadVertices(graph, Paths.get(inputBaseDir + "/" + fileName),
               true, batchSize, progReportPeriod);
           System.out.println("Finished");
         } catch (NoSuchFileException e) {
@@ -417,7 +417,7 @@ progReportPeriod = 50
       for (String fileName : propertiesFiles) {
         System.out.print("Loading properties file " + fileName + " ");
         try {
-          LDBCGraphLoader.loadProperties(graph, Paths.get(inputBaseDir + "/" + fileName), 
+          LDBCGraphLoader.loadProperties(graph, Paths.get(inputBaseDir + "/" + fileName),
               true, batchSize, progReportPeriod);
           System.out.println("Finished");
         } catch (NoSuchFileException e) {
@@ -429,10 +429,10 @@ progReportPeriod = 50
         System.out.print("Loading edge file " + fileName + " ");
         try {
           if (fileName.contains("person_knows_person")) {
-            LDBCGraphLoader.loadEdges(graph, Paths.get(inputBaseDir + "/" + fileName), true, 
+            LDBCGraphLoader.loadEdges(graph, Paths.get(inputBaseDir + "/" + fileName), true,
                 true, batchSize, progReportPeriod);
           } else {
-            LDBCGraphLoader.loadEdges(graph, Paths.get(inputBaseDir + "/" + fileName), false, 
+            LDBCGraphLoader.loadEdges(graph, Paths.get(inputBaseDir + "/" + fileName), false,
                 true, batchSize, progReportPeriod);
           }
 
@@ -445,16 +445,22 @@ progReportPeriod = 50
       System.out.println("Done Loading!");
       System.out.println( "Num nodes " + graph.traversal().V().count().next());
       System.out.println( "Num edges " + graph.traversal().E().count().next());
+
+
+      // THIS LINE BELOW WILL GENERATE A .kryo file
       graph.io(IoCore.gryo()).writeGraph("/runtime/data/social_network.1000u_1y.kryo");
 
+
+
+      // THESE LINES BELOW WILL GENERATE A GrphSON file
       try  {
           os = new FileOutputStream("/runtime/data/social_network.1000u.1y.json")
           mapper = mapper = graph.io(graphson()).mapper().embedTypes(true).create()
           graph.io(IoCore.graphson()).writer().mapper(mapper).create().writeGraph(os, graph)
       } catch (Exception e) {
-      System.out.println("Exception: " + e);
-      e.printStackTrace();
-    } 
+          System.out.println("Exception: " + e);
+          e.printStackTrace();
+      }
 
     } catch (Exception e) {
       System.out.println("Exception: " + e);
@@ -462,6 +468,6 @@ progReportPeriod = 50
     } finally {
       graph.close();
     }
-  
+
 
   System.exit(0);
