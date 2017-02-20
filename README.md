@@ -1,7 +1,8 @@
 # Docker File for LDBC-SNB Data Generator
 
 Suppose you want to generate synthetic graph data compaible and loadable into a [Tinkerpop 3 data format](http://tinkerpop.apache.org/docs/current/reference/#_gremlin_i_o).
-We are here to the rescue!
+*We are here to the rescue!*
+
 This repo contains files and configurations that build a docker image with the desirde data inside, and then how to transpose it to the Tinkerpop-compatible format, and how to load it into Tinkergraph.
 
 Below a preamble, the *“just run it!”* steps are in the section **RUN!**, but you should still read below to know what will happen. 
