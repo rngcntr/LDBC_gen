@@ -452,7 +452,7 @@ progReportPeriod = 50
 
 
 
-      // THESE LINES BELOW WILL GENERATE A GrphSON file
+      // THESE LINES BELOW WILL GENERATE A GraphSON file
       try  {
           os = new FileOutputStream("/runtime/data/social_network.1000u.1y.json")
           mapper = mapper = graph.io(graphson()).mapper().embedTypes(true).create()
@@ -461,6 +461,8 @@ progReportPeriod = 50
           System.out.println("Exception: " + e);
           e.printStackTrace();
       }
+      // END OF GaphSON Generation
+
 
     } catch (Exception e) {
       System.out.println("Exception: " + e);
