@@ -2,8 +2,19 @@ DATASET = System.env.get("DATASET");
 
 graph = TinkerGraph.open()
 
+if(DATASET.endsWith('.json')) {
+    reader = IoCore.graphson()
+} else if (DATASET.endsWith('.kryo')) {
+    reader = IoCore.gryo()
+} else {
+    System.err.println("File extension of "  + DATASET +  " not recognizes." );
+    System.exit(2)
+}
+
+
+
 stime = System.nanoTime()
-graph.io(IoCore.gryo()).readGraph(DATASET_FILE)
+graph.io(reader).readGraph(DATASET)
 exec_time = System.currentTimeMillis() - stime
 
 result_row = [DATASET, 'load',String.valueOf(exec_time),'']
