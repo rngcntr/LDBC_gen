@@ -448,14 +448,14 @@ progReportPeriod = 50
 
 
       // THIS LINE BELOW WILL GENERATE A .kryo file
-      graph.io(IoCore.gryo()).writeGraph("/runtime/data/social_network.1000u_1y.kryo");
+      graph.io(IoCore.gryo()).writeGraph("/runtime/data/social_network.kryo");
 
 
 
       // THESE LINES BELOW WILL GENERATE A GraphSON file
       try  {
-          os = new FileOutputStream("/runtime/data/social_network.1000u.1y.json")
-          mapper = mapper = graph.io(graphson()).mapper().embedTypes(true).create()
+          os = new FileOutputStream("/runtime/data/social_network.json")
+          mapper = mapper = graph.io(graphson()).mapper().create()
           graph.io(IoCore.graphson()).writer().mapper(mapper).create().writeGraph(os, graph)
       } catch (Exception e) {
           System.out.println("Exception: " + e);
