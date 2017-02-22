@@ -120,9 +120,16 @@ You can read lines `450-464`  in `runtime/ldbc.groovy`, and comment out the part
 
 The third step, is to run it in interactive mode running the gremlin console.
 
-
 ~~~bash
 docker run  -it -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx32G' gremlin/ldbc_gen gremlin.sh
 ~~~
 
 
+
+### RUN A QUERY
+
+You can also use the  docker image also to run query on top of the data.
+
+~~~bash
+docker run  -it -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx4G'  -e DATASET=/runtime/data/social_network.100u_1y.json  gremlin/ldbc_gen gremlin.sh -e /runtime/queries/count-edges.groovy
+~~~
