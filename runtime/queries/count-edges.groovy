@@ -1,23 +1,25 @@
 DATASET = System.env.get("DATASET");
+System.err.println("Loading:  " +DATASET)
 
 graph = TinkerGraph.open()
 
+is = new FileInputStream(DATASET)
+extension = ''
+stime = System.nanoTime()
 if(DATASET.endsWith('.json')) {
-    reader = IoCore.graphson()
+    extension = 'GraphSON'
+    mapper = graph.io(IoCore.graphson()).mapper().embedTypes(true).create()
+    graph.io(IoCore.graphson()).reader().mapper(mapper).create().readGraph(is, graph)
 } else if (DATASET.endsWith('.kryo')) {
-    reader = IoCore.gryo()
+    extension = 'Kryo'
+    graph.io(IoCore.gryo()).reader().create().readGraph(is, graph)
 } else {
     System.err.println("File extension of "  + DATASET +  " not recognizes." );
     System.exit(2)
 }
+exec_time = System.nanoTime() - stime
 
-
-
-stime = System.nanoTime()
-graph.io(reader).readGraph(DATASET)
-exec_time = System.currentTimeMillis() - stime
-
-result_row = [DATASET, 'load',String.valueOf(exec_time),'']
+result_row = [DATASET, 'load',String.valueOf(exec_time),extension]
 println result_row.join(',')
 
 g = graph.traversal()
