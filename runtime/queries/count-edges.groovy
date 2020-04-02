@@ -8,7 +8,7 @@ extension = ''
 stime = System.nanoTime()
 if(DATASET.endsWith('.json')) {
     extension = 'GraphSON'
-    mapper = graph.io(IoCore.graphson()).mapper().embedTypes(true).create()
+    mapper = graph.io(IoCore.graphson()).mapper().typeInfo(TypeInfo.PARTIAL_TYPES).create()
     graph.io(IoCore.graphson()).reader().mapper(mapper).create().readGraph(is, graph)
 } else if (DATASET.endsWith('.kryo')) {
     extension = 'Kryo'

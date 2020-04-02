@@ -131,5 +131,5 @@ docker run  -it -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx3
 You can also use the  docker image also to run query on top of the data.
 
 ~~~bash
-docker run  -it -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx4G'  -e DATASET=/runtime/data/social_network.100u_1y.json  gremlin/ldbc_gen gremlin.sh -e /runtime/queries/count-edges.groovy
+docker run  -it -v `pwd`/runtime:/runtime -e JAVA_OPTIONS='-Xms1G -Xmn128M -Xmx4G'  -e DATASET=/runtime/data/social_network.json  gremlin/ldbc_gen gremlin.sh -e /runtime/queries/count-edges.groovy
 ~~~
